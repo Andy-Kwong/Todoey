@@ -93,6 +93,7 @@ class todoListViewController: UITableViewController {
     }
     
     // function with parameter fetch request defaulted at pulling out all from Core Data
+    // TODO: return to original todo list once user clears search field
     func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
         do {
             itemArray = try context.fetch(request)
@@ -119,6 +120,18 @@ extension todoListViewController: UISearchBarDelegate {
         
         loadItems(with: request)
 
+    }
+    
+    // Clears search bar when you clear the field
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            //Uses separate thread and dismiss the keyboard
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
     }
     
 }
