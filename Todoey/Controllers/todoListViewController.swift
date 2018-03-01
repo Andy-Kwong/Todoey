@@ -38,7 +38,7 @@ class todoListViewController: UITableViewController {
         cell.accessoryType = item.done ? .checkmark : .none
             
         } else {
-            cell.textLabel?.text = "No Items Added"
+            cell.textLabel?.text = "No Items"
         }
 
         return cell
