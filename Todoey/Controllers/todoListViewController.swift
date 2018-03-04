@@ -105,23 +105,10 @@ class todoListViewController: UITableViewController {
     // MARK = Model Manipulation Methods
 
     // function with parameter fetch request defaulted at pulling out all from Core Data
-    // TODO: return to original todo list once user clears search field
     func loadItems() {
         
         todoItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
         tableView.reloadData()
-
-//        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
-//
-//        if let additionalPredicate = predicate {
-//            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
-//        }
-//
-//        do {
-//            itemArray = try context.fetch(request)
-//        } catch {
-//            print("Error fetching data from context \(error)")
-//        }
 
     }
 }
