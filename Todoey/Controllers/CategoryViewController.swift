@@ -30,8 +30,18 @@ class CategoryViewController: SwipeTableViewController {
 
         cell.textLabel?.text = categoryArray?[indexPath.row].name ?? "No Categories Added Yet"
         
-        // Set background color of cell to saved color in realm, if there is no saved color (??) then assign a randomFlat color to the cell.
-        cell.backgroundColor = HexColor(categoryArray?[indexPath.row].color ?? UIColor.randomFlat.hexValue())
+        if let category = categoryArray?[indexPath.row] {
+            cell.textLabel?.text = category.name
+            
+            guard let categoryColor = HexColor(category.color) else { fatalError() }
+
+            // Set background color of cell to saved color in realm, if there is no saved color (??) then assign a randomFlat color to the cell.
+//            cell.backgroundColor = HexColor(categoryArray?[indexPath.row].color ?? UIColor.randomFlat.hexValue())
+            
+            cell.backgroundColor = categoryColor
+            cell.textLabel?.textColor = ContrastColorOf(categoryColor, returnFlat: true)
+        }
+
 
         return cell
     }
