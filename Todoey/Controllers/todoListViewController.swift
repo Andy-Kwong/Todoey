@@ -9,8 +9,9 @@
 import UIKit
 import Foundation
 import RealmSwift
+import ChameleonFramework
 
-class todoListViewController: UITableViewController {
+class todoListViewController: SwipeTableViewController {
     
     var todoItems: Results<Item>?
     let realm = try! Realm()
@@ -24,19 +25,22 @@ class todoListViewController: UITableViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+        
+        tableView.separatorStyle = .none
+//        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let item = todoItems?[indexPath.row] {
-            
-        cell.textLabel?.text = item.title
-        cell.accessoryType = item.done ? .checkmark : .none
-            
+            cell.textLabel?.text = item.title
+            cell.accessoryType = item.done ? .checkmark : .none
+            if let color = FlatSkyBlue().darken(byPercentage: CGFloat(indexPath.row)/CGFloat(todoItems!.count)) {
+                cell.backgroundColor = color
+            }
         } else {
             cell.textLabel?.text = "No Items"
         }
@@ -81,15 +85,14 @@ class todoListViewController: UITableViewController {
                             let newItem = Item()
                             newItem.title = textField.text!
                             newItem.dateCreated = Date()
+                            newItem.color = UIColor.randomFlat.hexValue()
                             currentCategory.items.append(newItem)
                         }
                 } catch {
                     print("error saving new items, \(error)")
                 }
             }
-            
             self.tableView.reloadData()
-            
         }
         
         alert.addTextField { (alertTextField) in
@@ -102,7 +105,7 @@ class todoListViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    // MARK = Model Manipulation Methods
+    // MARK - Model Manipulation Methods
 
     // function with parameter fetch request defaulted at pulling out all from Core Data
     func loadItems() {
@@ -111,7 +114,22 @@ class todoListViewController: UITableViewController {
         tableView.reloadData()
 
     }
+    
+    // MARK - Delete Data From Swipe
+    
+    override func updateModel(at indexPath: IndexPath) {
+        if let todoForDeletion = todoItems?[indexPath.row] {
+            do {
+                try self.realm.write {
+                    self.realm.delete(todoForDeletion)
+                }
+            } catch {
+                print ("Error deleting todo, \(error)")
+            }
+        }
+    }
 }
+
 
 //MARK: - Search bar methods
 extension todoListViewController: UISearchBarDelegate {
